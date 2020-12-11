@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 using UnityEngine.XR.Management;
 
 public class XrInitialize : MonoBehaviour
@@ -9,6 +10,14 @@ public class XrInitialize : MonoBehaviour
     void Start()
     {
         StartCoroutine(CheckForXr());
+        
+    }
+    
+
+    // Update is called once per frame
+    void Update()
+    {
+        
     }
 
     IEnumerator CheckForXr()
@@ -21,13 +30,27 @@ public class XrInitialize : MonoBehaviour
         }
         else
         {
+            List<XRDisplaySubsystem> displaySubsystems = new List<XRDisplaySubsystem>();
+
+            SubsystemManager.GetInstances<XRDisplaySubsystem>(displaySubsystems);
+            foreach (var subsystem in displaySubsystems)
+            {
+                Debug.Log($"XR SubSystem: {subsystem.SubsystemDescriptor.id}");
+            }
+
+            if (true == displaySubsystems?.Count > 0)
+            {
+                XRGeneralSettings.Instance.Manager.StartSubsystems();
+            }
+
             yield return null;
 
-            StartCoroutine(CheckForAvailableXRDevices());
+            StartCoroutine(ShowCurrentlyAvailableXRDevices());
         }
     }
 
-    IEnumerator CheckForAvailableXRDevices()
+
+    IEnumerator ShowCurrentlyAvailableXRDevices()
     {
         var foundXrDevice = false;
         var inputDevices = new List<UnityEngine.XR.InputDevice>();
